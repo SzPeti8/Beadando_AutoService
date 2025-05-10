@@ -23,7 +23,7 @@ builder.Services.AddDbContext<DataContext>(
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddSingleton<IPersonService, PersonService>();
+builder.Services.AddSingleton<IWorkService, WorkService>();
 
 builder.Services.AddCors();
 

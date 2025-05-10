@@ -16,7 +16,7 @@ namespace AutoService.Shared
 
         [Required]
         [RegularExpression(@"\S+", ErrorMessage = "FaultDescription cannot be empty or whitespace.")]
-        public string CustumerId { get; set; }
+        public string CustomerId { get; set; }
 
         [Required]
         [RegularExpression(@"^[A-Z]{3}-\d{3}$", ErrorMessage = "RegPlate must be in the format XXX-YYY (X: uppercase letters, Y: numbers).")]
