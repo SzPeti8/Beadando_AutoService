@@ -15,6 +15,7 @@ namespace AutoService.Shared
         public string Id { get; set; }
 
         [Required]
+        [RegularExpression(@"\S+", ErrorMessage = "FaultDescription cannot be empty or whitespace.")]
         public string CustumerId { get; set; }
 
         [Required]
@@ -30,6 +31,7 @@ namespace AutoService.Shared
         public WorkTypeEnum WorkType { get; set; }
 
         [Required]
+        [RegularExpression(@"\S+", ErrorMessage = "FaultDescription cannot be empty or whitespace.")]
         public string FaultDescription { get; set; }
 
         [Required]
@@ -62,7 +64,6 @@ namespace AutoService.Shared
                     throw new InvalidOperationException("Invalid state transition for WorkStatus.");
                 }
             }
-
         }
     }
 
