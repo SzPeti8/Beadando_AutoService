@@ -12,6 +12,6 @@ namespace AutoService.Api
 
         Work Get(string id);
 
-        void Update( Work work);
+        void Update(string id, Work work);
     }
 }
