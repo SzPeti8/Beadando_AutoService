@@ -13,7 +13,7 @@ builder.Services.AddSerilog(
 
 builder.Services.AddControllers();
 
-builder.Services.AddDbContext<DemoDataContext>(
+builder.Services.AddDbContext<DataContext>(
     options =>
     {
         options.UseSqlite(builder.Configuration.GetConnectionString("SQLite"));

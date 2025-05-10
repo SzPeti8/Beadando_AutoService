@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace AutoService.Shared
 {
-    internal class Work
+    public class Work
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
