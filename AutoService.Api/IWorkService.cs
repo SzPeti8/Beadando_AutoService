@@ -10,8 +10,12 @@ namespace AutoService.Api
 
         List<Work> Get();
 
+        List<Work> GetWorksForCustomer(string customerID);
+
         Work Get(string id);
 
         void Update(string id, Work work);
+
+        int CalculateWorkDuration(string id);
     }
 }
