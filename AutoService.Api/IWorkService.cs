@@ -12,7 +12,7 @@ namespace AutoService.Api
 
         List<Work> GetWorksForCustomer(string customerID);
 
-        Task<List<Work>> GetWorksForCustomerAsync(string customerID);
+        
         
         Work Get(string id);
 

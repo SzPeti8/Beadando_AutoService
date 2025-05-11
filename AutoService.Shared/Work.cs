@@ -38,33 +38,45 @@ namespace AutoService.Shared
         [Range(1, 10, ErrorMessage = "FaultSeverity must be a number between 1 and 10.")]
         public int FaultSeverity { get; set; }
 
-        private WorkStatusEnum _workStatus;
 
         [Required]
-        [RegularExpression(@"^(None|FelvettMunka|ElvegzesAlatt|Befejezett)$", ErrorMessage = "WorkStatus must be one of the following: None, FelvettMunka, ElvegzesAlatt, Befejezett.")]
-        public WorkStatusEnum WorkStatus
+        [RegularExpression(@"^(FelvettMunka|ElvegzesAlatt|Befejezett)$", ErrorMessage = "WorkStatus must be one of the following:  FelvettMunka, ElvegzesAlatt, Befejezett.")]
+        public WorkStatusEnum WorkStatus { get; set; }
+
+        public void SetWorkStatus(WorkStatusEnum value, bool canChangeWhitoutTests)
         {
-            get => _workStatus;
-            set
+            if(WorkStatus == value)
             {
-                if (_workStatus == WorkStatusEnum.None && value == WorkStatusEnum.FelvettMunka)
+                WorkStatus = value;
+                return;
+            }
+            
+            else if (WorkStatus == WorkStatusEnum.FelvettMunka && value == WorkStatusEnum.ElvegzesAlatt && !canChangeWhitoutTests)
+            {
+                WorkStatus = value;
+                return;
+            }
+            else if (WorkStatus == WorkStatusEnum.ElvegzesAlatt && value == WorkStatusEnum.Befejezett && !canChangeWhitoutTests)
+            {
+                WorkStatus = value;
+                return;
+            }
+            else
+            {
+                if (canChangeWhitoutTests)
                 {
-                    _workStatus = value;
-                }
-                else if (_workStatus == WorkStatusEnum.FelvettMunka && value == WorkStatusEnum.ElvegzesAlatt)
-                {
-                    _workStatus = value;
-                }
-                else if (_workStatus == WorkStatusEnum.ElvegzesAlatt && value == WorkStatusEnum.Befejezett)
-                {
-                    _workStatus = value;
+                    WorkStatus = value;
+                    return;
                 }
                 else
                 {
-                    throw new InvalidOperationException("Invalid state transition for WorkStatus.");
+                    throw new InvalidOperationException($"Invalid state transition for WorkStatus: {WorkStatus} => {value}");
                 }
+                
             }
         }
+
+       
     }
 
     public enum WorkTypeEnum
@@ -77,7 +89,7 @@ namespace AutoService.Shared
 
     public enum WorkStatusEnum
     {
-        None,
+        
         FelvettMunka,
         ElvegzesAlatt,
         Befejezett

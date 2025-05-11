@@ -36,10 +36,6 @@ namespace AutoService.Api
             return _works.Where(w => w.CustomerId == customerID).ToList();
         }
 
-        public async Task<List<Work>> GetWorksForCustomerAsync(string customerID)
-        {
-            return _works.Where(w => w.CustomerId == customerID).ToList();
-        }
 
         public Work Get(string id)
         {

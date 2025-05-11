@@ -12,12 +12,12 @@ namespace AutoService.Api.Controllers
     public class WorksController : ControllerBase
     {
         private readonly DataContext _dataContext;
-        private readonly IWorkService _workService; 
+        
 
-        public WorksController(DataContext dataContext, IWorkService workService)
+        public WorksController(DataContext dataContext)
         {
             _dataContext = dataContext;
-            _workService = workService; 
+             
         }
 
         [HttpPost("add/")]
@@ -27,7 +27,7 @@ namespace AutoService.Api.Controllers
 
             if (existingPerson is not null)
             {
-                return Conflict();
+                return Conflict("There is already a Work with this Id");
             }
 
             _dataContext.Works.Add(work);
@@ -75,14 +75,17 @@ namespace AutoService.Api.Controllers
         [HttpGet("{id}/works")]
         public async Task<ActionResult<List<Customer>>> GetWorksForCustomer(string id)
         {
-            
-            var works = await _workService.GetWorksForCustomerAsync(id);
-
-            if (works is null || works.Count == 0)
+            if (id == null || !_dataContext.Customers.Any(e => e.Id == id))
             {
                 return NotFound();
             }
-
+            var works = await _dataContext.Works
+                .Where(w => w.CustomerId == id)
+                .ToListAsync();
+            if (works == null)
+            {
+                return NotFound();
+            }
             return Ok(works);
         }
 
@@ -109,7 +112,15 @@ namespace AutoService.Api.Controllers
             existingWork.WorkType = work.WorkType;
             existingWork.FaultDescription = work.FaultDescription;
             existingWork.FaultSeverity = work.FaultSeverity;
-            existingWork.WorkStatus = work.WorkStatus;
+            try
+            {
+                existingWork.SetWorkStatus(work.WorkStatus, false);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
 
             _dataContext.Works.Update(existingWork);
             await _dataContext.SaveChangesAsync();

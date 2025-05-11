@@ -12,7 +12,7 @@ namespace AutoService.Api.Controllers
 {
     [Route("customers")]
     [ApiController]
-    public class CustomersController : Controller
+    public class CustomersController : ControllerBase
     {
         private readonly DataContext _context;
 
@@ -23,14 +23,15 @@ namespace AutoService.Api.Controllers
 
         // GET: Customers
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<ActionResult<List<Work>>> GetAll()
         {
-            return View(await _context.Customers.ToListAsync());
+            var people = await _context.Customers.ToListAsync();
+            return Ok(people);
         }
 
         // GET: Customers/Details/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> Details(string id)
+        public async Task<ActionResult<Work>> Get(string id)
         {
             if (id == null)
             {
@@ -38,127 +39,96 @@ namespace AutoService.Api.Controllers
             }
 
             var customer = await _context.Customers
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FindAsync(id);
             if (customer == null)
             {
                 return NotFound();
             }
 
-            return View(customer);
+            return Ok(customer);
         }
 
-        // GET: Customers/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
 
-        // POST: Customers/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
         [HttpPost("add/")]
-        public async Task<IActionResult> Create([Bind("Id,Name,Adress,Email")] Customer customer)
+        public async Task<IActionResult> Add([FromBody] Customer customer)
         {
-            if (ModelState.IsValid)
+            var existingCustomer = await _context.Customers.FindAsync(customer.Id);
+
+            if (existingCustomer is not null)
             {
-                _context.Add(customer);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return Conflict();
             }
-            return View(customer);
+
+            _context.Customers.Add(customer);
+            await _context.SaveChangesAsync();
+
+            return Ok();
         }
 
-        // GET: Customers/Edit/5
-        //[HttpPut("{id}")]
-        public async Task<IActionResult> Edit(string id)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(string id, [Bind("Id,Name,Adress,Email")] Customer customer)
         {
             if (id == null)
             {
-                return NotFound();
+                return BadRequest();
             }
 
-            var customer = await _context.Customers.FindAsync(id);
-            if (customer == null)
+            var oldCustomer = await _context.Customers.FindAsync(id);
+
+            if (oldCustomer is null)
             {
                 return NotFound();
             }
-            return View(customer);
+
+            oldCustomer.Name = customer.Name;
+            oldCustomer.Adress = customer.Adress;
+            oldCustomer.Email = customer.Email;
+
+            _context.Customers.Update(oldCustomer);
+            await _context.SaveChangesAsync();
+
+            return Ok();
         }
 
-        // POST: Customers/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Edit(string id, [Bind("Id,Name,Adress,Email")] Customer customer)
-        {
-            if (id != customer.Id)
-            {
-                return NotFound();
-            }
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(customer);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!CustomerExists(customer.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(customer);
-        }
-
-        // GET: Customers/Delete/5
+        [HttpDelete("{id}")]
+        
         public async Task<IActionResult> Delete(string id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var customer = await _context.Customers
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (customer == null)
-            {
-                return NotFound();
-            }
-
-            return View(customer);
-        }
-
-        // POST: Customers/Delete/5
-        [HttpDelete("{id}")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string id)
-        {
             var customer = await _context.Customers.FindAsync(id);
-            if (customer != null)
+            if (CustomerExists(id))
             {
                 _context.Customers.Remove(customer);
             }
+            else
+            {
+                return NotFound();
+            }
 
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return Ok($"Id:{id}, Name: {customer.Name}. Deleted");
         }
 
         private bool CustomerExists(string id)
         {
             return _context.Customers.Any(e => e.Id == id);
+        }
+
+        [HttpGet("{id}/works")]
+        public async Task<ActionResult<List<Work>>> GetWorks(string id)
+        {
+            if (id == null || !CustomerExists(id))
+            {
+                return NotFound();
+            }
+            var works = await _context.Works
+                .Where(w => w.CustomerId == id)
+                .ToListAsync();
+            if (works == null)
+            {
+                return NotFound();
+            }
+            return Ok(works);
         }
     }
 }
