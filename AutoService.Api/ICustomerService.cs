@@ -2,7 +2,7 @@
 
 namespace AutoService.Api
 {
-    public interface ICustomerInterface
+    public interface ICustomerService
     {
         void Add(Customer customer);
 
@@ -12,6 +12,6 @@ namespace AutoService.Api
 
         Customer Get(string id);
 
-        void Update(string id, Customer customer);
+        void Update( Customer customer);
     }
 }

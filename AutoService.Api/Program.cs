@@ -25,6 +25,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<IWorkService, WorkService>();
 
+builder.Services.AddSingleton<ICustomerService, CustomerService>();
+
 builder.Services.AddCors();
 
 var app = builder.Build();
