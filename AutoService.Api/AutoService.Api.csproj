@@ -26,4 +26,8 @@
     <ProjectReference Include="..\AutoService.Shared\AutoService.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+  </ItemGroup>
+
 </Project>

@@ -12,15 +12,15 @@ namespace AutoService.Api.Controllers
     public class WorksController : ControllerBase
     {
         private readonly DataContext _dataContext;
-        private readonly WorkService _workService; 
+        private readonly IWorkService _workService; 
 
-        public WorksController(DataContext dataContext, WorkService workService)
+        public WorksController(DataContext dataContext, IWorkService workService)
         {
             _dataContext = dataContext;
             _workService = workService; 
         }
 
-        [HttpPost]
+        [HttpPost("add/")]
         public async Task<IActionResult> Add([FromBody] Work work)
         {
             var existingPerson = await _dataContext.Works.FindAsync(work.Id);

@@ -16,7 +16,7 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<DataContext>(
     options =>
     {
-        options.UseSqlite(builder.Configuration.GetConnectionString("SQLite"));
+        options.UseSqlite("Data Source=AutoService.db");
         options.UseLazyLoadingProxies();
     });
 
