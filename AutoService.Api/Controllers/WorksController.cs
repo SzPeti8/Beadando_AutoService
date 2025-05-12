@@ -1,5 +1,6 @@
 ﻿using AutoService.Shared;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using System;
 
@@ -106,21 +107,19 @@ namespace AutoService.Api.Controllers
                 return NotFound();
             }
 
+            if (work.WorkStatus < existingWork.WorkStatus)
+            {
+                ModelState.AddModelError<Work>((x) => x.WorkStatus, "New WorkStatus cannot be lower than current.");
+                return ValidationProblem(ModelState);
+            }
+
             existingWork.CustomerId = work.CustomerId;
             existingWork.RegPlate = work.RegPlate;
             existingWork.DateOfMake = work.DateOfMake;
             existingWork.WorkType = work.WorkType;
             existingWork.FaultDescription = work.FaultDescription;
             existingWork.FaultSeverity = work.FaultSeverity;
-            try
-            {
-                existingWork.SetWorkStatus(work.WorkStatus, false);
-            }
-            catch (InvalidOperationException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-
+            existingWork.WorkStatus = work.WorkStatus;
 
             _dataContext.Works.Update(existingWork);
             await _dataContext.SaveChangesAsync();

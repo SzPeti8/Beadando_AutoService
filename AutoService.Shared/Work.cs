@@ -42,56 +42,22 @@ namespace AutoService.Shared
         [Required]
         [EnumDataType(typeof(WorkStatusEnum))]
         public WorkStatusEnum WorkStatus { get; set; }
-
-        public void SetWorkStatus(WorkStatusEnum value, bool canChangeWhitoutTests)
-        {
-            if(WorkStatus == value)
-            {
-                WorkStatus = value;
-                return;
-            }
-            
-            else if (WorkStatus == WorkStatusEnum.FelvettMunka && value == WorkStatusEnum.ElvegzesAlatt && !canChangeWhitoutTests)
-            {
-                WorkStatus = value;
-                return;
-            }
-            else if (WorkStatus == WorkStatusEnum.ElvegzesAlatt && value == WorkStatusEnum.Befejezett && !canChangeWhitoutTests)
-            {
-                WorkStatus = value;
-                return;
-            }
-            else
-            {
-                if (canChangeWhitoutTests)
-                {
-                    WorkStatus = value;
-                    return;
-                }
-                else
-                {
-                    throw new InvalidOperationException($"Invalid state transition for WorkStatus: {WorkStatus} => {value}");
-                }
-                
-            }
-        }
-
-       
+  
     }
 
     public enum WorkTypeEnum
     {
-        Karosszeria,
-        Motor,
-        Futomu,
-        Fekberendezes
+        Karosszeria = 0,
+        Motor = 1,
+        Futomu = 2,
+        Fekberendezes = 3,
     }
 
     public enum WorkStatusEnum
     {
         
-        FelvettMunka,
-        ElvegzesAlatt,
-        Befejezett
+        FelvettMunka = 0,
+        ElvegzesAlatt = 1,
+        Befejezett = 2,s
     }
 }
