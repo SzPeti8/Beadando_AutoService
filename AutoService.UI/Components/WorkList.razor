@@ -1,0 +1,94 @@
+﻿@using AutoService.Shared
+@using AutoService.UI.Services
+@inject IWorkService WorkService
+@*@inject IWorkHourEstimationService WorkHourEstimationService*@
+
+@if (EnableSearch)
+{
+    <div class="form-group row mb-3">
+        <label class="col-auto col-form-label">Search: </label>
+        <div class="col">
+            <input class="form-control" @bind:event="oninput" @bind="Filter" />
+        </div>
+    </div>
+}
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col" width="1%">#</th>
+                <th scope="col" class="col-1">Customer Name</th>
+                <th scope="col" class="col-1">License Plate</th>
+                <th scope="col" class="col-1">Manufacturing Date</th>
+                <th scope="col" class="col-1">Category</th>
+                <th scope="col" class="col-4">Description</th>
+                <th scope="col" class="col-1">Severity</th>
+                <th scope="col" class="col-1">Status</th>
+                @*<th scope="col" class="col-1">Work Hour Estimation</th>*@
+                <th scope="col" width="1%"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                int i = 1;
+            }
+            @foreach (var work in Works)
+            {
+                if (!FilterMatches(work))
+                    continue;
+                <tr>
+                    <td scope="row">@i</td>
+                    @if (CustomerIncluded)
+                    {
+                        <td>@work.CustomerId</td>
+                    }
+                    <td>@work.RegPlate</td>
+                    <td>@work.DateOfMake</td>
+                    <td>@work.WorkType</td>
+                    <td style="max-width: 1px">
+                        <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                            @work.FaultDescription
+                        </div>
+                    </td>
+                    <td>@work.FaultSeverity</td>
+                    <td>@work.WorkStatus</td>
+                    @*<td>@(string.Format("{0:N2}h", WorkHourEstimationService.GetWorkHourEstimation(work.Work.Properties)))</td>*@
+                    <td>@(WorkSelectedButtonTemplate(work))</td>
+                    @* <td><a href="/work/@work.Work.Id" class="btn btn-primary">Details</a></td> *@
+                </tr>
+                i++;
+            }
+        </tbody>
+    </table>
+</div>
+
+@code {
+    [Parameter]
+    public IList<Work> Works { get; set; }
+
+    [Parameter]
+    public bool EnableSearch { get; set; }
+
+    [Parameter]
+    public RenderFragment<Work> WorkSelectedButtonTemplate { get; set; }
+
+    [Parameter]
+    public bool CustomerIncluded { get; set; }
+
+    public string? Filter { get; set; }
+
+    private bool FilterMatches(Work work)
+    {
+        if (string.IsNullOrWhiteSpace(Filter))
+            return true;
+
+        string f = Filter.Trim();
+        return work.Id.ToString().Contains(f, StringComparison.OrdinalIgnoreCase)
+            || work.RegPlate.Contains(f, StringComparison.OrdinalIgnoreCase)
+            || work.DateOfMake.ToString().Contains(f, StringComparison.OrdinalIgnoreCase)
+            || work.WorkType.ToString().Contains(f, StringComparison.OrdinalIgnoreCase)
+            || work.FaultDescription.Contains(f, StringComparison.OrdinalIgnoreCase)
+            || work.FaultSeverity.ToString().Contains(f, StringComparison.OrdinalIgnoreCase)
+            || work.WorkStatus.ToString().Contains(f, StringComparison.OrdinalIgnoreCase);
+    }
+}
