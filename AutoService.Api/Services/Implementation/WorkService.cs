@@ -84,51 +84,7 @@ namespace AutoService.Api.Services.Implementation
             }
         }
 
-        public async Task<double> CalculateWorkDuration(string id)
-        {
-            var work = await _context.Works.FindAsync(id);
-            if (work == null)
-            {
-                _logger.LogWarning("Work with ID {Id} not found", id);
-                return 0; // Return a default value if the work is not found
-            }
-
-            int categoryScore = work.WorkType switch
-            {
-                WorkTypeEnum.Karosszeria => 3,
-                WorkTypeEnum.Motor => 8,
-                WorkTypeEnum.Futomu => 6,
-                WorkTypeEnum.Fekberendezes => 4,
-                _ => 1
-            };
-
-            if (!work.DateOfMake.HasValue)
-            {
-                _logger.LogWarning("DateOfMake is null for Work with ID {Id}", id);
-                return 0;
-            }
-
-            int age = DateTime.Now.Year - work.DateOfMake.Value.Year;
-            double oldness = age switch
-            {
-                < 5 => 0.5,
-                >= 5 and < 10 => 1,
-                >= 10 and < 20 => 1.5,
-                >= 20 => 2
-            };
-
-            double severityScore = work.FaultSeverity switch
-            {
-                1 or 2 => 0.2,
-                3 or 4 => 0.4,
-                5 or 7 => 0.6,
-                8 or 9 => 0.8,
-                10 => 1,
-                _ => 1
-            };
-
-            return categoryScore * oldness * severityScore;
-        }
+        
     }
 
 }

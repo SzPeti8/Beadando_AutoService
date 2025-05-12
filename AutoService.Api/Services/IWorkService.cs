@@ -16,6 +16,5 @@ namespace AutoService.Api.Services
 
         Task Update( Work work);
 
-        Task<double> CalculateWorkDuration(string id);
     }
 }
