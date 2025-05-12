@@ -12,5 +12,6 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("http://
 
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IWorkService, WorkService>();
+builder.Services.AddScoped<IWorkHourEstimationService, WorkHourEstimationService>();
 
 await builder.Build().RunAsync();
