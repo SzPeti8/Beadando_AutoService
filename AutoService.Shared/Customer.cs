@@ -11,20 +11,18 @@ namespace AutoService.Shared
     public class Customer
     {
         [Key]
+        [Required]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public string Id { get; set; }
 
-        [Required]
-        [RegularExpression(@"\S.*", ErrorMessage = "Name cannot be only whitespaces.")]
+        [Required(AllowEmptyStrings = false)]
         public string Name { get; set; }
 
-        [Required]
-        [RegularExpression(@"\S.*", ErrorMessage = "Address cannot be only whitespaces.")]
+        [Required(AllowEmptyStrings = false)]
         public string Adress { get; set; }
 
-        [Required]
+        [Required(AllowEmptyStrings = false)]
         [EmailAddress]
-        [RegularExpression(@"\S.*", ErrorMessage = "Email cannot be only whitespaces.")]
         public string Email { get; set; }
     }
 }

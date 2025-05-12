@@ -11,11 +11,11 @@ namespace AutoService.Shared
     public class Work
     {
         [Key]
+        [Required]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public string Id { get; set; }
 
         [Required]
-        [RegularExpression(@"\S+", ErrorMessage = "FaultDescription cannot be empty or whitespace.")]
         public string CustomerId { get; set; }
 
         [Required]
@@ -30,8 +30,8 @@ namespace AutoService.Shared
         [RegularExpression(@"^(Karosszeria|Motor|Futomu|Fekberendezes)$", ErrorMessage = "WorkType must be one of the following: Karosszeria, Motor, Futomu, Fekberendezes.")]
         public WorkTypeEnum WorkType { get; set; }
 
-        [Required]
-        [RegularExpression(@"\S+", ErrorMessage = "FaultDescription cannot be empty or whitespace.")]
+        
+        [Required(AllowEmptyStrings = false)]
         public string FaultDescription { get; set; }
 
         [Required]
@@ -40,7 +40,7 @@ namespace AutoService.Shared
 
 
         [Required]
-        [RegularExpression(@"^(FelvettMunka|ElvegzesAlatt|Befejezett)$", ErrorMessage = "WorkStatus must be one of the following:  FelvettMunka, ElvegzesAlatt, Befejezett.")]
+        [EnumDataType(typeof(WorkStatusEnum))]
         public WorkStatusEnum WorkStatus { get; set; }
 
         public void SetWorkStatus(WorkStatusEnum value, bool canChangeWhitoutTests)
