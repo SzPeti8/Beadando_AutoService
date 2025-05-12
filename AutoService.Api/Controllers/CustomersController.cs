@@ -68,7 +68,7 @@ namespace AutoService.Api.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(string id, [Bind("Id,Name,Adress,Email")] Customer customer)
         {
-            if (id == null)
+            if (id != customer.Id|| customer == null)
             {
                 return BadRequest();
             }
