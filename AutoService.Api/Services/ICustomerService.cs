@@ -1,6 +1,6 @@
 ﻿using AutoService.Shared;
 
-namespace AutoService.Api
+namespace AutoService.Api.Services
 {
     public interface ICustomerService
     {

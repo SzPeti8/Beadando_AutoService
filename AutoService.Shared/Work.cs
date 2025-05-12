@@ -58,6 +58,6 @@ namespace AutoService.Shared
         
         FelvettMunka = 0,
         ElvegzesAlatt = 1,
-        Befejezett = 2,s
+        Befejezett = 2,
     }
 }

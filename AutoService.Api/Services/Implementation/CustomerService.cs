@@ -1,6 +1,7 @@
-﻿using AutoService.Shared;
+﻿using AutoService.Api.Services;
+using AutoService.Shared;
 
-namespace AutoService.Api
+namespace AutoService.Api.Services.Implementation
 {
     public class CustomerService : ICustomerService
     {

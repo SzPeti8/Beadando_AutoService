@@ -1,4 +1,5 @@
-﻿using AutoService.Shared;
+﻿using AutoService.Api.Services;
+using AutoService.Shared;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
@@ -12,27 +13,26 @@ namespace AutoService.Api.Controllers
     [ApiController]
     public class WorksController : ControllerBase
     {
-        private readonly DataContext _dataContext;
+        private readonly IWorkService _workService;
         
 
-        public WorksController(DataContext dataContext)
+        public WorksController(IWorkService workService)
         {
-            _dataContext = dataContext;
+            _workService = workService;
              
         }
 
         [HttpPost("add/")]
         public async Task<IActionResult> Add([FromBody] Work work)
         {
-            var existingPerson = await _dataContext.Works.FindAsync(work.Id);
+            var existingPerson = await _workService.Get(work.Id, false);
 
             if (existingPerson is not null)
             {
                 return Conflict("There is already a Work with this Id");
             }
 
-            _dataContext.Works.Add(work);
-            await _dataContext.SaveChangesAsync();
+            await _workService.Add(work);
 
             return Ok();
         }
@@ -40,15 +40,14 @@ namespace AutoService.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id)
         {
-            var existingWork = await _dataContext.Works.FindAsync(id);
+            var existingWork = await _workService.Get(id, false);
 
             if (existingWork is null)
             {
                 return NotFound();
             }
 
-            _dataContext.Works.Remove(existingWork);
-            await _dataContext.SaveChangesAsync();
+            await _workService.Delete(id);
 
             return Ok();
         }
@@ -56,14 +55,14 @@ namespace AutoService.Api.Controllers
         [HttpGet]
         public async Task<ActionResult<List<Work>>> GetAll()
         {
-            var works = await _dataContext.Works.ToListAsync();
+            var works = await _workService.GetAll();
             return Ok(works);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Work>> Get(string id)
         {
-            var work = await _dataContext.Works.FindAsync(id);
+            var work = await _workService.Get(id,   true);
 
             if (work is null)
             {
@@ -76,13 +75,13 @@ namespace AutoService.Api.Controllers
         [HttpGet("{id}/works")]
         public async Task<ActionResult<List<Customer>>> GetWorksForCustomer(string id)
         {
-            if (id == null || !_dataContext.Customers.Any(e => e.Id == id))
+
+            if (id == null)
             {
                 return NotFound();
             }
-            var works = await _dataContext.Works
-                .Where(w => w.CustomerId == id)
-                .ToListAsync();
+
+            var works = await _workService.GetWorksForCustomer(id);
             if (works == null)
             {
                 return NotFound();
@@ -95,36 +94,43 @@ namespace AutoService.Api.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(string id, [FromBody] Work work)
         {
-            if (id != work.Id)
+            if (id != work.Id|| work == null)
             {
                 return BadRequest();
             }
 
-            var existingWork = await _dataContext.Works.FindAsync(id);
+            var existingWork = await _workService.Get(id, false);
 
             if (existingWork is null)
             {
                 return NotFound();
             }
 
-            if (work.WorkStatus < existingWork.WorkStatus)
+            if(existingWork.WorkStatus == work.WorkStatus)
             {
-                ModelState.AddModelError<Work>((x) => x.WorkStatus, "New WorkStatus cannot be lower than current.");
+                await _workService.Update(work);
+                return Ok();
+            }
+            else if (work.WorkStatus == WorkStatusEnum.ElvegzesAlatt &&  existingWork.WorkStatus == WorkStatusEnum.FelvettMunka)
+            {
+                await _workService.Update(work);
+                return Ok();
+            }
+            else if(work.WorkStatus == WorkStatusEnum.Befejezett && existingWork.WorkStatus == WorkStatusEnum.ElvegzesAlatt)
+            {
+                await _workService.Update(work);
+                return Ok();
+            }
+            else
+            {
+                ModelState.AddModelError<Work>((x) => x.WorkStatus, $"New WorkStatus cannot be lower than current. You tried: {existingWork.WorkStatus} => {work.WorkStatus}");
                 return ValidationProblem(ModelState);
             }
+               
+            
+           
 
-            existingWork.CustomerId = work.CustomerId;
-            existingWork.RegPlate = work.RegPlate;
-            existingWork.DateOfMake = work.DateOfMake;
-            existingWork.WorkType = work.WorkType;
-            existingWork.FaultDescription = work.FaultDescription;
-            existingWork.FaultSeverity = work.FaultSeverity;
-            existingWork.WorkStatus = work.WorkStatus;
-
-            _dataContext.Works.Update(existingWork);
-            await _dataContext.SaveChangesAsync();
-
-            return Ok();
+            
         }
     }
 }

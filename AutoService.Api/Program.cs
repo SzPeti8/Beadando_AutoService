@@ -1,5 +1,7 @@
 
 using AutoService.Api;
+using AutoService.Api.Services;
+using AutoService.Api.Services.Implementation;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
@@ -18,7 +20,7 @@ builder.Services.AddDbContext<DataContext>(
     {
         options.UseSqlite("Data Source=AutoService.db");
         options.UseLazyLoadingProxies();
-    });
+    }, ServiceLifetime.Singleton);
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddSwaggerGen();
