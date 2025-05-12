@@ -1,0 +1,31 @@
+﻿@page "/work/list"
+
+@using AutoService.Shared
+@using AutoService.UI.Components
+@using AutoService.UI.Services
+@inject IWorkService WorkService
+@inject NavigationManager Navigation
+
+<h3>Work List</h3>
+
+@if (Works is null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <WorkList Works="Works" EnableSearch="true" CustomerIncluded="true">
+        <WorkSelectedButtonTemplate>
+            <a href="/work/@context.Id" class="btn btn-primary">Details</a>
+        </WorkSelectedButtonTemplate>
+    </WorkList>
+}
+
+@code {
+    private IList<Work>? Works { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Works = await WorkService.GetAllWorksAsync();
+    }
+}
