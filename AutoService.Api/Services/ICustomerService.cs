@@ -4,14 +4,16 @@ namespace AutoService.Api.Services
 {
     public interface ICustomerService
     {
-        void Add(Customer customer);
+        Task Add(Customer customer);
 
-        void Delete(string id);
+        Task Delete(string id);
 
-        List<Customer> Get();
+        Task<List<Customer>> GetAll();
 
-        Customer Get(string id);
+        Task<Customer> Get(string id, bool needLog = true);
 
-        void Update( Customer customer);
+        Task Update( Customer customer);
+
+        Task<List<Work>> GetWorksForCustomer(string customerID);
     }
 }

@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using AutoService.Api;
 using AutoService.Shared;
+using AutoService.Api.Services;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace AutoService.Api.Controllers
 {
@@ -14,18 +16,18 @@ namespace AutoService.Api.Controllers
     [ApiController]
     public class CustomersController : ControllerBase
     {
-        private readonly DataContext _context;
+        private readonly ICustomerService _customerService;
 
-        public CustomersController(DataContext context)
+        public CustomersController(ICustomerService customerService)
         {
-            _context = context;
+            _customerService = customerService;
         }
 
         // GET: Customers
         [HttpGet]
         public async Task<ActionResult<List<Work>>> GetAll()
         {
-            var people = await _context.Customers.ToListAsync();
+            var people = await _customerService.GetAll();
             return Ok(people);
         }
 
@@ -38,8 +40,7 @@ namespace AutoService.Api.Controllers
                 return NotFound();
             }
 
-            var customer = await _context.Customers
-                .FindAsync(id);
+            var customer = await _customerService.Get(id);
             if (customer == null)
             {
                 return NotFound();
@@ -52,15 +53,14 @@ namespace AutoService.Api.Controllers
         [HttpPost("add/")]
         public async Task<IActionResult> Add([FromBody] Customer customer)
         {
-            var existingCustomer = await _context.Customers.FindAsync(customer.Id);
+            var existingCustomer = await _customerService.Get(customer.Id,false);
 
             if (existingCustomer is not null)
             {
                 return Conflict();
             }
 
-            _context.Customers.Add(customer);
-            await _context.SaveChangesAsync();
+            await _customerService.Add(customer);
 
             return Ok();
         }
@@ -73,19 +73,14 @@ namespace AutoService.Api.Controllers
                 return BadRequest();
             }
 
-            var oldCustomer = await _context.Customers.FindAsync(id);
+            var oldCustomer = await _customerService.Get(id,false);
 
             if (oldCustomer is null)
             {
                 return NotFound();
             }
 
-            oldCustomer.Name = customer.Name;
-            oldCustomer.Adress = customer.Adress;
-            oldCustomer.Email = customer.Email;
-
-            _context.Customers.Update(oldCustomer);
-            await _context.SaveChangesAsync();
+            await _customerService.Update(customer);
 
             return Ok();
         }
@@ -95,35 +90,28 @@ namespace AutoService.Api.Controllers
         
         public async Task<IActionResult> Delete(string id)
         {
-            var customer = await _context.Customers.FindAsync(id);
-            if (CustomerExists(id))
-            {
-                _context.Customers.Remove(customer);
-            }
-            else
+            var customer = await _customerService.Get(id, false);
+            if (customer == null)
             {
                 return NotFound();
             }
+            else
+            {
+                await _customerService.Delete(id);
+            }
 
-            await _context.SaveChangesAsync();
             return Ok($"Id:{id}, Name: {customer.Name}. Deleted");
-        }
-
-        private bool CustomerExists(string id)
-        {
-            return _context.Customers.Any(e => e.Id == id);
         }
 
         [HttpGet("{id}/works")]
         public async Task<ActionResult<List<Work>>> GetWorks(string id)
         {
-            if (id == null || !CustomerExists(id))
+            var customer = await _customerService.Get(id, false);
+            if (id == null || customer == null)
             {
                 return NotFound();
             }
-            var works = await _context.Works
-                .Where(w => w.CustomerId == id)
-                .ToListAsync();
+            var works = await _customerService.GetWorksForCustomer(id);
             if (works == null)
             {
                 return NotFound();

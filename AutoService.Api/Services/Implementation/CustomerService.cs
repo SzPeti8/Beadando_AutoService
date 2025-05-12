@@ -1,43 +1,60 @@
 ﻿using AutoService.Api.Services;
 using AutoService.Shared;
+using Castle.Core.Resource;
+using Humanizer;
+using Microsoft.EntityFrameworkCore;
 
 namespace AutoService.Api.Services.Implementation
 {
     public class CustomerService : ICustomerService
     {
-        private readonly List<Customer> _customers;
+        private readonly DataContext _context;
         private readonly ILogger<CustomerService> _logger;
-        public CustomerService(ILogger<CustomerService> logger)
+        public CustomerService(ILogger<CustomerService> logger, DataContext context)
         {
-            _customers = new List<Customer>();
+            _context = context;
             _logger = logger;
         }
-        public void Add(Customer customer)
+        public async Task Add(Customer customer)
         {
-            _customers.Add(customer);
+            await _context.Customers.AddAsync(customer);
+            await _context.SaveChangesAsync();
+
             _logger.LogInformation("Customer added: {@Customer}", customer);
         }
-        public void Delete(string id)
+        public async Task Delete(string id)
         {
-            _customers.RemoveAll(x => x.Id == id);
-            _logger.LogInformation("Customer deleted");
+            var customer = await Get(id, false);
+            _context.Customers.Remove(customer);
+            await _context.SaveChangesAsync();
+            _logger.LogInformation($"Customer id: {customer.Id}, Name: {customer.Name} deleted.");
         }
-        public List<Customer> Get()
+        public async Task<List<Customer>> GetAll()
         {
-            return _customers;
+            var result = await _context.Customers.ToListAsync();
+            _logger.LogInformation($"All {result.Count} customers retrieved");
+            return result;
         }
-        public Customer Get(string id)
+        public async Task<Customer> Get(string id,bool needLog = true)
         {
-            return _customers.Find(c => c.Id == id);
+            var customer = await _context.Customers.FirstOrDefaultAsync(x => x.Id == id);
+
+            if (needLog)
+            {
+                _logger.LogInformation("Customer retrieved: {@customer}", customer);
+            }
+            
+            return customer;
         }
-        public void Update( Customer customer)
+        public async Task Update( Customer customer)
         {
-            var existingCustomer = Get(customer.Id);
+            var existingCustomer = await Get(customer.Id,false);
             if (existingCustomer != null)
             {
                 existingCustomer.Name = customer.Name;
                 existingCustomer.Adress = customer.Adress;
                 existingCustomer.Email = customer.Email;
+                await _context.SaveChangesAsync();
                 _logger.LogInformation("Customer updated: {@Customer}", customer);
             }
             else
@@ -45,5 +62,15 @@ namespace AutoService.Api.Services.Implementation
                 _logger.LogWarning("Customer not found for update: {@Customer}", customer);
             }
         }
+
+        public async Task<List<Work>> GetWorksForCustomer(string customerID)
+        {
+            var results = await _context.Works
+                .Where(w => w.CustomerId == customerID)
+                .ToListAsync();
+            _logger.LogInformation($"Works retrieved for customer: {customerID}+\n+ {results}");
+            return results;
+        }
+
     }
 }
