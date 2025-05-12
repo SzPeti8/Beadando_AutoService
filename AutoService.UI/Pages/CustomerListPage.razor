@@ -1,0 +1,36 @@
+﻿@page "/customers/list"
+
+@using AutoService.Shared
+@using AutoService.UI.Services
+@using AutoService.UI.Components
+@inject ICustomerService CustomerService
+@inject NavigationManager Navigation
+
+<h3>Customer List</h3>
+
+@if (Customers is null)
+{
+	<p>Loading...</p>
+}
+else
+{
+	<CustomerList Customers="Customers" EnableSearch="true">
+		<CustomerSelectedButtonTemplate>
+			<button @onclick="@(() => NavigateToCustomer(context))" class="btn btn-primary">Details</button>
+		</CustomerSelectedButtonTemplate>
+	</CustomerList>
+}
+
+@code {
+	private IList<Customer>? Customers { get; set; }
+
+	protected override async Task OnInitializedAsync()
+	{
+		Customers = await CustomerService.GetAllCustomersAsync();
+	}
+
+	private async Task NavigateToCustomer(Customer customer)
+	{
+		Navigation.NavigateTo($"/customer/{customer.Id}");
+	}
+}

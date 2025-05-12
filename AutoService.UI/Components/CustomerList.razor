@@ -1,0 +1,70 @@
+﻿@using AutoService.Shared
+@using AutoService.UI.Services
+@inject ICustomerService CustomerService
+
+@if (EnableSearch)
+{
+    <div class="form-group row mb-3">
+        <label class="col-auto col-form-label">Search: </label>
+        <div class="col">
+            <input class="form-control" @bind:event="oninput" @bind="Filter" />
+        </div>
+    </div>
+}
+<div class="table-responsive">
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th scope="col" width="1%">#</th>
+                <th scope="col" class="col-3">Name</th>
+                <th scope="col" class="col-3">Address</th>
+                <th scope="col" class="col-3">Email</th>
+                <th scope="col" width="1%"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                int i = 1;
+            }
+            @foreach (var customer in Customers)
+            {
+                if (!FilterMatches(customer))
+                    continue;
+                <tr>
+                    <td scope="row">@i</td>
+                    <td>@customer.Name</td>
+                    <td>@customer.Adress</td>
+                    <td>@customer.Email</td>
+                    <td>@CustomerSelectedButtonTemplate(customer)</td>
+                </tr>
+                i++;
+            }
+        </tbody>
+    </table>
+</div>
+
+
+@code {
+    [Parameter]
+    public IList<Customer> Customers { get; set; }
+
+    [Parameter]
+    public bool EnableSearch { get; set; }
+
+    [Parameter]
+    public RenderFragment<Customer> CustomerSelectedButtonTemplate { get; set; }
+
+    public string? Filter { get; set; }
+
+    private bool FilterMatches(Customer customer)
+    {
+        if (string.IsNullOrWhiteSpace(Filter))
+            return true;
+
+        string f = Filter.Trim();
+        return customer.Id.ToString().Contains(f, StringComparison.OrdinalIgnoreCase)
+            || customer.Name.Contains(f, StringComparison.OrdinalIgnoreCase)
+            || customer.Adress.Contains(f, StringComparison.OrdinalIgnoreCase)
+            || customer.Email.Contains(f, StringComparison.OrdinalIgnoreCase);
+    }
+}
