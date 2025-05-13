@@ -16,7 +16,7 @@ namespace AutoService.UI.Services.Implementation
 
         public async Task AddWorkAsync(Work work)
         {
-            await _httpClient.PostAsJsonAsync("/works", work);
+            await _httpClient.PostAsJsonAsync("/works/add", work);
         }
 
         public async Task DeleteWorkAsync(int id)
