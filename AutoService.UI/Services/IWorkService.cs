@@ -13,5 +13,6 @@ namespace AutoService.UI.Services
         Task AddWorkAsync(Work work);
 
         Task UpdateWorkAsync(Work work);
+        Task<List<Work>> GetWorksForCustomerAsync(string id);
     }
 }

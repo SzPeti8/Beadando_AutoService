@@ -1,6 +1,6 @@
 ﻿@using AutoService.Shared
 
-<EditForm Model="Customer" OnValidSubmit="() => OnValidSubmit()">
+<EditForm Model="Customer" OnValidSubmit="OnValidSubmit">
 	<DataAnnotationsValidator />
 
 	<div class="form-group row mb-3">
@@ -24,7 +24,7 @@
 			<ValidationMessage For="@(() => Customer.Email)" />
 		</div>
 	</div>
-	<button class="w-100 btn btn-primary" type="submit">@ButtonText</button>
+	<button  class="w-100 btn btn-primary" type="submit">@ButtonText</button>
 </EditForm>
 
 
@@ -37,4 +37,9 @@
 
 	[Parameter]
 	public string ButtonText { get; set; }
+
+    public void SetCustomer()
+    {
+        Customer.Id = "165486";
+    }
 }

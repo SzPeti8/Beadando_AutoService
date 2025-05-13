@@ -73,7 +73,7 @@ namespace AutoService.Api.Controllers
         }
 
         [HttpGet("{id}/works")]
-        public async Task<ActionResult<List<Customer>>> GetWorksForCustomer(string id)
+        public async Task<ActionResult<List<Work>>> GetWorksForCustomer(string id)
         {
 
             if (id == null)

@@ -35,7 +35,8 @@
                     <td>@customer.Name</td>
                     <td>@customer.Adress</td>
                     <td>@customer.Email</td>
-                    <td>@CustomerSelectedButtonTemplate(customer)</td>
+                    @*<td>@CustomerSelectedButtonTemplate(customer)</td>*@
+                    <td><a href="/customer/selected/@customer.Id" class="btn btn-primary">Details</a></td>
                 </tr>
                 i++;
             }

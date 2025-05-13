@@ -1,0 +1,60 @@
+﻿@page "/customer/selected/{id}"
+
+@using AutoService.Shared
+@using AutoService.UI.Components
+@using AutoService.UI.Services
+@inject ICustomerService CustomerService
+@inject NavigationManager NavigationManager
+@inject IWorkService WorkService
+
+<h3>Customer Details</h3>
+
+@if (Customer is null)
+{
+	<p>Loading...</p>
+}
+else
+{
+	<div class="container-fluid p-0">
+		<div class="card p-3">
+			<CustomerForm Customer="Customer" ButtonText="Update" OnValidSubmit="UpdateAsync" />
+			<button type="button" class="mt-1 w-100 btn btn-danger" @onclick="DeleteAsync">Delete</button>
+		</div>
+		<div class="card p-3 mt-2">
+			<h3>Works</h3>
+			<WorkList Works="Works" EnableSearch="true" CustomerIncluded="false">
+				<WorkSelectedButtonTemplate>
+					<a href="/work/selected/{id}" class="btn btn-primary">Details</a>
+				</WorkSelectedButtonTemplate>
+			</WorkList>
+		</div>
+	</div>
+}
+
+@code {
+
+	[Parameter]
+	public string Id { get; set; }
+
+	private Customer? Customer { get; set; }
+
+    private List<Work>? Works { get; set; }
+
+	protected override async Task OnInitializedAsync()
+	{
+		Customer = await CustomerService.GetCustomerAsync(Id);
+        Works = await WorkService.GetWorksForCustomerAsync(Id);
+	}
+
+	private async Task DeleteAsync()
+	{
+		await CustomerService.DeleteCustomerAsync(Id);
+		NavigationManager.NavigateTo("/customers/list");
+	}
+
+	private async Task UpdateAsync()
+	{
+		await CustomerService.UpdateCustomerAsync(Customer);
+		NavigationManager.NavigateTo("/customers/list");
+	}
+}

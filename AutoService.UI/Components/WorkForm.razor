@@ -3,33 +3,69 @@
 @inject ICustomerService CustomerService
 @inject NavigationManager Navigation
 
-<div class="modal fade" id="customerSelectModal" tabindex="-1">
-	<div class="modal-dialog justify-content-center modal-fullscreen modal-dialog-centered">
-		<div class="modal-content w-75 h-75">
-			<div class="modal-header">
-				<h5 class="modal-title" id="customerSelectModalLabel">Select the customer</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-			</div>
-			<div class="modal-body">
-				@if (Customers == null)
-				{
-					<p>Loading...</p>
-				}
-				else
-				{
-					<CustomerList Customers="Customers" EnableSearch="true">
-						<CustomerSelectedButtonTemplate>
-							<button @onclick="@(() => CustomerSelected(context))" data-bs-dismiss="modal" class="btn btn-primary">Select</button>
-						</CustomerSelectedButtonTemplate>
-					</CustomerList>
-				}
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+@if (showCustomerModal)
+{
+	<div class="modal fade show" id="customerSelectModal" tabindex="-1" style="display: block;" aria-modal="true" role="dialog">
+		<div class="modal-dialog justify-content-center modal-fullscreen modal-dialog-centered">
+			<div class="modal-content w-75 h-75">
+				<div class="modal-header">
+					<h5 class="modal-title" id="customerSelectModalLabel">Select the customer</h5>
+					<button type="button" class="btn-close" @onclick="CloseCustomerModal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					@if (Customers == null)
+					{
+						<p>Loading...</p>
+					}
+					else
+					{
+						<table class="table table-hover">
+							<thead>
+								<tr>
+									<th>Name</th>
+									<th>Email</th>
+									<th>Action</th>
+								</tr>
+							</thead>
+							<tbody>
+								@foreach (var customer in Customers)
+								{
+									<tr>
+										<td>@customer.Name</td>
+										<td>@customer.Email</td>
+										<td>
+											<button @onclick="() => CustomerSelected(customer)" class="btn btn-primary">Select</button>
+										</td>
+									</tr>
+								}
+							</tbody>
+						</table>
+					}
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" @onclick="CloseCustomerModal">Close</button>
+				</div>
 			</div>
 		</div>
 	</div>
-</div>
+}
+
+
+@code {
+	private bool showCustomerModal = false;
+
+	private void CloseCustomerModal()
+	{
+		showCustomerModal = false;
+		StateHasChanged();
+	}
+
+    private void OpenCustomerModal()
+    {
+        showCustomerModal = true;
+        StateHasChanged();
+    }
+}
 
 <EditForm EditContext="editContext" OnValidSubmit="OnValidSubmit">
 	<DataAnnotationsValidator />
@@ -39,7 +75,7 @@
 		<div class="col-md-10">
 			<div class="input-group">
 				<div class="input-group-prepend">
-					<button class="btn btn-outline-secondary" type="button" data-bs-toggle="modal" data-bs-target="#customerSelectModal">Select</button>
+					<button @onclick="OpenCustomerModal" class=" btn btn-outline-secondary" type="button" data-bs-toggle="modal" data-bs-target="#customerSelectModal">Select</button>
 				</div>
 				<input readonly value="@(SelectedCustomer != null ? $"{SelectedCustomer.Name} ({SelectedCustomer.Email})" : "")" type="text" class="form-control" placeholder="None" />
 				<div class="input-group-append">
@@ -94,15 +130,28 @@
 	<div class="mb-3">
 		<label class="form-label">Státusz</label>
 		<InputSelect @bind-Value="Work.WorkStatus" class="form-select">
-			<option disabled="@(workStatusInitial > WorkStatusEnum.FelvettMunka)" value="@WorkStatusEnum.FelvettMunka">Not Started</option>
-			<option disabled="@(workStatusInitial > WorkStatusEnum.ElvegzesAlatt)" value="@WorkStatusEnum.ElvegzesAlatt">In Progress</option>
-			<option disabled="@(workStatusInitial > WorkStatusEnum.Befejezett)" value="@WorkStatusEnum.Befejezett">Completed</option>
+			<option disabled="@(workStatusInitial > WorkStatusEnum.FelvettMunka)" value="@WorkStatusEnum.FelvettMunka">FelvettMunka</option>
+			<option disabled="@(workStatusInitial > WorkStatusEnum.ElvegzesAlatt)" value="@WorkStatusEnum.ElvegzesAlatt">ElvegzesAlatt</option>
+			<option disabled="@(workStatusInitial > WorkStatusEnum.Befejezett)" value="@WorkStatusEnum.Befejezett">Befejezett</option>
 		</InputSelect>
 		<ValidationMessage For="() => Work.WorkStatus" />
 	</div>
-	<div class="mb-3">
-		<button class="w-100 btn btn-primary" type="submit">@ButtonText</button>
-	</div>
+    <div class="mb-3">
+    <button class="w-100 btn btn-primary" type="submit" @onclick="HandleSubmit">@ButtonText</button>
+    </div>
+
+    @code {
+    private async Task HandleSubmit()
+    {
+        if (editContext.Validate())
+        {
+            if (OnValidSubmit != null)
+            {
+                await OnValidSubmit.Invoke();
+            }
+        }
+    }
+    }
 </EditForm>
 
 
@@ -126,7 +175,7 @@
 	private IList<Customer> Customers { get; set; }
 
 	private WorkStatusEnum workStatusInitial;
- 
+
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -159,12 +208,13 @@
 		SelectedCustomer = customer;
 		Work.CustomerId = customer.Id;
 		editContext.NotifyFieldChanged(editContext.Field(nameof(Work.CustomerId)));
+		CloseCustomerModal();
 		StateHasChanged();
 	}
 
 	private async Task NavigateToCustomer(string id)
 	{
-		Navigation.NavigateTo($"/customer/{id}");
+		Navigation.NavigateTo($"/customer/selected/{id}");
 	}
 
 	private void CustomValidateCustomerIdField()

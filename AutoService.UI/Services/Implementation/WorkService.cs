@@ -34,6 +34,11 @@ namespace AutoService.UI.Services.Implementation
             return await _httpClient.GetFromJsonAsync<Work>($"/Works/{id}");
         }
 
+        public async Task<List<Work>> GetWorksForCustomerAsync(string id)
+        {
+            return await _httpClient.GetFromJsonAsync<List<Work>>($"/works/{id}/works");
+        }
+
         public async Task UpdateWorkAsync(Work work)
         {
             await _httpClient.PutAsJsonAsync($"/works/{work.Id}", work);
