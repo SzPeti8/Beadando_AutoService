@@ -221,7 +221,7 @@
 	{
 		FieldIdentifier customerIdField = editContext.Field(nameof(Work.CustomerId));
 		validationMessages.Clear(customerIdField);
-		if (Work.CustomerId == null)
+		if (Work.CustomerId == 0)
 			validationMessages.Add(customerIdField, "Customer is required.");
 	}
 
