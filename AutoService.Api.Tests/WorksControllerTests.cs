@@ -172,7 +172,7 @@ namespace AutoService.Api.Tests
                 Id = 0
             });
 
-            Assert.IsType<BadRequestResult>(response);
+            Assert.IsType<NotFoundResult>(response);
         }
 
     }

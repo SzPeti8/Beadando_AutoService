@@ -23,7 +23,7 @@ namespace AutoService.Api.Tests
                 .ReturnsAsync(new Customer());
             CustomersController customersController = new CustomersController(customerServiceMock.Object);
 
-            var response = await customersController.Get(string.Empty);
+            var response = await customersController.Get(0);
             var result = response.Result;
 
             customerServiceMock.VerifyAll();
@@ -41,7 +41,7 @@ namespace AutoService.Api.Tests
                 .ReturnsAsync(value: null);
             CustomersController customersController = new CustomersController(customerServiceMock.Object);
 
-            var response = await customersController.Get(string.Empty);
+            var response = await customersController.Get(0);
             var result = response.Result;
 
             customerServiceMock.VerifyAll();
@@ -94,7 +94,7 @@ namespace AutoService.Api.Tests
 
             CustomersController customersController = new CustomersController(customerServiceMock.Object);
 
-            var response = await customersController.Delete(string.Empty);
+            var response = await customersController.Delete(0);
 
             customerServiceMock.VerifyAll();
 
@@ -114,7 +114,7 @@ namespace AutoService.Api.Tests
 
             CustomersController customersController = new CustomersController(customerServiceMock.Object);
 
-            var response = await customersController.Delete(null);
+            var response = await customersController.Delete(0);
 
             customerServiceMock.VerifyAll();
 
@@ -134,7 +134,7 @@ namespace AutoService.Api.Tests
 
             CustomersController customersController = new CustomersController(customerServiceMock.Object);
 
-            var response = await customersController.Update(null, new Customer()
+            var response = await customersController.Update(0, new Customer()
             {
                 Id = 0,
             });
@@ -154,7 +154,7 @@ namespace AutoService.Api.Tests
 
             CustomersController customersController = new CustomersController(customerServiceMock.Object);
 
-            var response = await customersController.Update(null, new Customer()
+            var response = await customersController.Update(0, new Customer()
             {
                 Id = 0,
             });
@@ -171,12 +171,12 @@ namespace AutoService.Api.Tests
 
             CustomersController customersController = new CustomersController(workServiceMock.Object);
 
-            var response = await customersController.Update(null, new Customer()
+            var response = await customersController.Update(0, new Customer()
             {
                 Id = 0
             });
 
-            Assert.IsType<BadRequestResult>(response);
+            Assert.IsType<NotFoundResult>(response);
         }
     }
 }
