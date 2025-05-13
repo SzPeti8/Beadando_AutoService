@@ -1,0 +1,40 @@
+﻿@using AutoService.Shared
+
+<EditForm Model="Customer" OnValidSubmit="() => OnValidSubmit()">
+	<DataAnnotationsValidator />
+
+	<div class="form-group row mb-3">
+		<label class="col-md-2 col-form-label">Name: <span class="text-danger" /></label>
+		<div class="col-md-10">
+			<InputText class="form-control" @bind-Value="Customer.Name" Placeholder="Name" />
+			<ValidationMessage For="@(() => Customer.Name)" />
+		</div>
+	</div>
+	<div class="form-group row mb-3">
+		<label class="col-md-2 col-form-label">Address: <span class="text-danger" /></label>
+		<div class="col-md-10">
+			<InputText class="form-control" @bind-Value="Customer.Adress" Placeholder="Address" />
+			<ValidationMessage For="@(() => Customer.Adress)" />
+		</div>
+	</div>
+	<div class="form-group row mb-3">
+		<label class="col-md-2 col-form-label">Email: <span class="text-danger" /></label>
+		<div class="col-md-10">
+			<InputText class="form-control" @bind-Value="Customer.Email" Placeholder="Email" />
+			<ValidationMessage For="@(() => Customer.Email)" />
+		</div>
+	</div>
+	<button class="w-100 btn btn-primary" type="submit">@ButtonText</button>
+</EditForm>
+
+
+@code {
+	[Parameter]
+	public Customer Customer { get; set; }
+
+	[Parameter]
+	public Func<Task> OnValidSubmit { get; set; }
+
+	[Parameter]
+	public string ButtonText { get; set; }
+}
