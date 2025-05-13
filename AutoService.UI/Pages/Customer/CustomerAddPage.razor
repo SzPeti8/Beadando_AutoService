@@ -1,0 +1,25 @@
+﻿@page "/customer/add"
+
+@using AutoService.Shared
+@using AutoService.UI.Components
+@using AutoService.UI.Services
+@inject ICustomerService CustomerService;
+@inject NavigationManager NavigationManager
+
+<h3>Add Customer</h3>
+
+<div class="container-fluid p-0">
+	<div class="card p-3">
+		<CustomerForm Customer="Customer" OnValidSubmit="AddCustomerAsync" ButtonText="Add Customer" />
+	</div>
+</div>
+
+@code {
+	private Customer Customer { get; set; } = new();
+
+	private async Task AddCustomerAsync()
+	{
+		await CustomerService.AddCustomerAsync(Customer);
+		NavigationManager.NavigateTo("/customers/list");
+	}
+}
