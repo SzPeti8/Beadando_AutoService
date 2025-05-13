@@ -38,7 +38,7 @@ namespace AutoService.Api.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(string id)
+        public async Task<IActionResult> Delete(int id)
         {
             var existingWork = await _workService.Get(id, false);
 
@@ -60,7 +60,7 @@ namespace AutoService.Api.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Work>> Get(string id)
+        public async Task<ActionResult<Work>> Get(int id)
         {
             var work = await _workService.Get(id,   true);
 
@@ -73,7 +73,7 @@ namespace AutoService.Api.Controllers
         }
 
         [HttpGet("{id}/works")]
-        public async Task<ActionResult<List<Work>>> GetWorksForCustomer(string id)
+        public async Task<ActionResult<List<Work>>> GetWorksForCustomer(int id)
         {
 
             if (id == null)
@@ -92,7 +92,7 @@ namespace AutoService.Api.Controllers
 
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(string id, [FromBody] Work work)
+        public async Task<IActionResult> Update(int id, [FromBody] Work work)
         {
             if (id != work.Id|| work == null)
             {

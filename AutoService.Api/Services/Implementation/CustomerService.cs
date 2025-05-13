@@ -22,7 +22,7 @@ namespace AutoService.Api.Services.Implementation
 
             _logger.LogInformation("Customer added: {@Customer}", customer);
         }
-        public async Task Delete(string id)
+        public async Task Delete(int id)
         {
             var customer = await Get(id, false);
             _context.Customers.Remove(customer);
@@ -35,7 +35,7 @@ namespace AutoService.Api.Services.Implementation
             _logger.LogInformation($"All {result.Count} customers retrieved");
             return result;
         }
-        public async Task<Customer> Get(string id,bool needLog = true)
+        public async Task<Customer> Get(int id,bool needLog = true)
         {
             var customer = await _context.Customers.FirstOrDefaultAsync(x => x.Id == id);
 
@@ -63,7 +63,7 @@ namespace AutoService.Api.Services.Implementation
             }
         }
 
-        public async Task<List<Work>> GetWorksForCustomer(string customerID)
+        public async Task<List<Work>> GetWorksForCustomer(int customerID)
         {
             var results = await _context.Works
                 .Where(w => w.CustomerId == customerID)

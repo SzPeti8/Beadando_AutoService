@@ -212,7 +212,7 @@
 		StateHasChanged();
 	}
 
-	private async Task NavigateToCustomer(string id)
+	private async Task NavigateToCustomer(int id)
 	{
 		Navigation.NavigateTo($"/customer/selected/{id}");
 	}
@@ -221,7 +221,7 @@
 	{
 		FieldIdentifier customerIdField = editContext.Field(nameof(Work.CustomerId));
 		validationMessages.Clear(customerIdField);
-		if (Work.CustomerId == string.Empty)
+		if (Work.CustomerId == null)
 			validationMessages.Add(customerIdField, "Customer is required.");
 	}
 

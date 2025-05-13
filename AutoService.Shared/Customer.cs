@@ -11,9 +11,9 @@ namespace AutoService.Shared
     public class Customer
     {
         [Key]
-        [Required]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public string Id { get; set; }
+        public int Id { get; set; }
 
         [Required(AllowEmptyStrings = false)]
         public string Name { get; set; }

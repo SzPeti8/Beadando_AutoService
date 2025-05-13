@@ -6,13 +6,13 @@ namespace AutoService.UI.Services
     {
         Task<IList<Work>> GetAllWorksAsync();
 
-        Task<Work> GetWorkAsync(string id);
+        Task<Work> GetWorkAsync(int id);
 
-        Task DeleteWorkAsync(string id);
+        Task DeleteWorkAsync(int id);
 
         Task AddWorkAsync(Work work);
 
         Task UpdateWorkAsync(Work work);
-        Task<List<Work>> GetWorksForCustomerAsync(string id);
+        Task<List<Work>> GetWorksForCustomerAsync(int id);
     }
 }

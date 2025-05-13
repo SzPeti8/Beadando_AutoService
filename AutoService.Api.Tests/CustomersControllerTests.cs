@@ -19,7 +19,7 @@ namespace AutoService.Api.Tests
         {
             Mock<ICustomerService> customerServiceMock = new Mock<ICustomerService>();
             customerServiceMock
-                .Setup(x => x.Get(It.IsAny<string>(), It.IsAny<bool>()))
+                .Setup(x => x.Get(It.IsAny<int>(), It.IsAny<bool>()))
                 .ReturnsAsync(new Customer());
             CustomersController customersController = new CustomersController(customerServiceMock.Object);
 
@@ -37,7 +37,7 @@ namespace AutoService.Api.Tests
         {
             Mock<ICustomerService> customerServiceMock = new Mock<ICustomerService>();
             customerServiceMock
-                .Setup(x => x.Get(It.IsAny<string>(), It.IsAny<bool>()))
+                .Setup(x => x.Get(It.IsAny<int>(), It.IsAny<bool>()))
                 .ReturnsAsync(value: null);
             CustomersController customersController = new CustomersController(customerServiceMock.Object);
 
@@ -89,7 +89,7 @@ namespace AutoService.Api.Tests
         {
             Mock<ICustomerService> customerServiceMock = new Mock<ICustomerService>();
             customerServiceMock
-                .Setup(x => x.Get(It.IsAny<string>(), It.IsAny<bool>()))
+                .Setup(x => x.Get(It.IsAny<int>(), It.IsAny<bool>()))
                 .ReturnsAsync(value: null);
 
             CustomersController customersController = new CustomersController(customerServiceMock.Object);
@@ -106,15 +106,15 @@ namespace AutoService.Api.Tests
         {
             Mock<ICustomerService> customerServiceMock = new Mock<ICustomerService>();
             customerServiceMock
-                .Setup(x => x.Get(It.IsAny<string>(), It.IsAny<bool>()))
+                .Setup(x => x.Get(It.IsAny<int>(), It.IsAny<bool>()))
                 .ReturnsAsync(new Customer());
             customerServiceMock
-                .Setup(x => x.Delete(It.IsAny<string>()))
+                .Setup(x => x.Delete(It.IsAny<int>()))
                 .Verifiable();
 
             CustomersController customersController = new CustomersController(customerServiceMock.Object);
 
-            var response = await customersController.Delete(string.Empty);
+            var response = await customersController.Delete(null);
 
             customerServiceMock.VerifyAll();
 
@@ -126,7 +126,7 @@ namespace AutoService.Api.Tests
         {
             Mock<ICustomerService> customerServiceMock = new Mock<ICustomerService>();
             customerServiceMock
-                .Setup(x => x.Get(It.IsAny<string>(), It.IsAny<bool>()))
+                .Setup(x => x.Get(It.IsAny<int>(), It.IsAny<bool>()))
                 .ReturnsAsync(new Customer());
             customerServiceMock
                 .Setup(x => x.Update(It.IsAny<Customer>()))
@@ -134,9 +134,9 @@ namespace AutoService.Api.Tests
 
             CustomersController customersController = new CustomersController(customerServiceMock.Object);
 
-            var response = await customersController.Update(string.Empty, new Customer()
+            var response = await customersController.Update(null, new Customer()
             {
-                Id = string.Empty,
+                Id = 0,
             });
 
             customerServiceMock.VerifyAll();
@@ -149,14 +149,14 @@ namespace AutoService.Api.Tests
         {
             Mock<ICustomerService> customerServiceMock = new Mock<ICustomerService>();
             customerServiceMock
-                .Setup(x => x.Get(It.IsAny<string>(), It.IsAny<bool>()))
+                .Setup(x => x.Get(It.IsAny<int>(), It.IsAny<bool>()))
                 .ReturnsAsync(value: null);
 
             CustomersController customersController = new CustomersController(customerServiceMock.Object);
 
-            var response = await customersController.Update(string.Empty, new Customer()
+            var response = await customersController.Update(null, new Customer()
             {
-                Id = string.Empty,
+                Id = 0,
             });
 
             customerServiceMock.VerifyAll();
@@ -171,9 +171,9 @@ namespace AutoService.Api.Tests
 
             CustomersController customersController = new CustomersController(workServiceMock.Object);
 
-            var response = await customersController.Update(string.Empty, new Customer()
+            var response = await customersController.Update(null, new Customer()
             {
-                Id = "123"
+                Id = 0
             });
 
             Assert.IsType<BadRequestResult>(response);

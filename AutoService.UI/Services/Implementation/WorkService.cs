@@ -19,7 +19,7 @@ namespace AutoService.UI.Services.Implementation
             await _httpClient.PostAsJsonAsync("/works", work);
         }
 
-        public async Task DeleteWorkAsync(string id)
+        public async Task DeleteWorkAsync(int id)
         {
             await _httpClient.DeleteAsync($"/works/{id}");
         }
@@ -29,12 +29,12 @@ namespace AutoService.UI.Services.Implementation
             return await _httpClient.GetFromJsonAsync<IList<Work>>("/works");
         }
 
-        public async Task<Work> GetWorkAsync(string id)
+        public async Task<Work> GetWorkAsync(int id)
         {
             return await _httpClient.GetFromJsonAsync<Work>($"/Works/{id}");
         }
 
-        public async Task<List<Work>> GetWorksForCustomerAsync(string id)
+        public async Task<List<Work>> GetWorksForCustomerAsync(int id)
         {
             return await _httpClient.GetFromJsonAsync<List<Work>>($"/works/{id}/works");
         }

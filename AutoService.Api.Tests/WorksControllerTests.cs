@@ -18,11 +18,11 @@ namespace AutoService.Api.Tests
         {
             Mock<IWorkService> workServiceMock = new Mock<IWorkService>();
             workServiceMock
-                .Setup(x => x.Get(It.IsAny<string>(), It.IsAny<bool>()))
+                .Setup(x => x.Get(It.IsAny<int>(), It.IsAny<bool>()))
                 .ReturnsAsync(new Work());
             WorksController WorksControllers = new WorksController(workServiceMock.Object);
 
-            var response = await WorksControllers.Get(string.Empty);
+            var response = await WorksControllers.Get(0);
             var result = response.Result;
 
             workServiceMock.VerifyAll();
@@ -36,11 +36,11 @@ namespace AutoService.Api.Tests
         {
             Mock<IWorkService> workServiceMock = new Mock<IWorkService>();
             workServiceMock
-                .Setup(x => x.Get(It.IsAny<string>(), It.IsAny<bool>()))
+                .Setup(x => x.Get(It.IsAny<int>(), It.IsAny<bool>()))
                 .ReturnsAsync(value: null);
             WorksController WorksController = new WorksController(workServiceMock.Object);
 
-            var response = await WorksController.Get(string.Empty);
+            var response = await WorksController.Get(0);
             var result = response.Result;
 
             workServiceMock.VerifyAll();
@@ -88,12 +88,12 @@ namespace AutoService.Api.Tests
         {
             Mock<IWorkService> workServiceMock = new Mock<IWorkService>();
             workServiceMock
-                .Setup(x => x.Get(It.IsAny<string>(), It.IsAny<bool>()))
+                .Setup(x => x.Get(It.IsAny<int>(), It.IsAny<bool>()))
                 .ReturnsAsync(value: null);
 
             WorksController WorksController = new WorksController(workServiceMock.Object);
 
-            var response = await WorksController.Delete(string.Empty);
+            var response = await WorksController.Delete(0);
 
             workServiceMock.VerifyAll();
 
@@ -105,15 +105,15 @@ namespace AutoService.Api.Tests
         {
             Mock<IWorkService> workServiceMock = new Mock<IWorkService>();
             workServiceMock
-                .Setup(x => x.Get(It.IsAny<string>(), It.IsAny<bool>()))
+                .Setup(x => x.Get(It.IsAny<int>(), It.IsAny<bool>()))
                 .ReturnsAsync(new Work());
             workServiceMock
-                .Setup(x => x.Delete(It.IsAny<string>()))
+                .Setup(x => x.Delete(It.IsAny<int>()))
                 .Verifiable();
 
             WorksController WorksController = new WorksController(workServiceMock.Object);
 
-            var response = await WorksController.Delete(string.Empty);
+            var response = await WorksController.Delete(0);
 
             workServiceMock.VerifyAll();
 
@@ -125,9 +125,9 @@ namespace AutoService.Api.Tests
         {
 
             var workServiceMock = new Mock<IWorkService>();
-            var existingWork = new Work { Id = "123" };
+            var existingWork = new Work { Id = 0 };
             workServiceMock
-                .Setup(x => x.Get("123", It.IsAny<bool>()))
+                .Setup(x => x.Get(0, It.IsAny<bool>()))
                 .ReturnsAsync(existingWork);
             workServiceMock
                 .Setup(x => x.Update(It.IsAny<Work>()))
@@ -135,9 +135,9 @@ namespace AutoService.Api.Tests
 
             var controller = new WorksController(workServiceMock.Object);
 
-            var response = await controller.Update("123", existingWork);
+            var response = await controller.Update(0, existingWork);
 
-            workServiceMock.Verify(x => x.Get("123", It.IsAny<bool>()), Times.Once);
+            workServiceMock.Verify(x => x.Get(0, It.IsAny<bool>()), Times.Once);
             workServiceMock.Verify(x => x.Update(existingWork), Times.Once);
             Assert.IsType<OkResult>(response);
 
@@ -148,14 +148,14 @@ namespace AutoService.Api.Tests
         {
             var workServiceMock = new Mock<IWorkService>();
             workServiceMock
-                .Setup(x => x.Get("notfound", It.IsAny<bool>()))
+                .Setup(x => x.Get(0, It.IsAny<bool>()))
                 .ReturnsAsync((Work)null);
 
             var controller = new WorksController(workServiceMock.Object);
 
-            var response = await controller.Update("notfound", new Work { Id = "notfound" });
+            var response = await controller.Update(0, new Work { Id = 0 });
 
-            workServiceMock.Verify(x => x.Get("notfound", It.IsAny<bool>()), Times.Once);
+            workServiceMock.Verify(x => x.Get(0, It.IsAny<bool>()), Times.Once);
             workServiceMock.Verify(x => x.Update(It.IsAny<Work>()), Times.Never);
             Assert.IsType<NotFoundResult>(response);
         }
@@ -167,9 +167,9 @@ namespace AutoService.Api.Tests
 
             WorksController WorksController = new WorksController(workServiceMock.Object);
 
-            var response = await WorksController.Update(string.Empty, new Work()
+            var response = await WorksController.Update(0, new Work()
             {
-                Id = "123"
+                Id = 0
             });
 
             Assert.IsType<BadRequestResult>(response);

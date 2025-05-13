@@ -6,9 +6,9 @@ namespace AutoService.UI.Services
     {
         Task<IList<Customer>> GetAllCustomersAsync();
 
-        Task<Customer> GetCustomerAsync(string id);
+        Task<Customer> GetCustomerAsync(int id);
 
-        Task DeleteCustomerAsync(string id);
+        Task DeleteCustomerAsync(int id);
 
         Task AddCustomerAsync(Customer customer);
 

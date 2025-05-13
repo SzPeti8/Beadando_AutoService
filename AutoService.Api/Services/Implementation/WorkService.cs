@@ -26,7 +26,7 @@ namespace AutoService.Api.Services.Implementation
             _logger.LogInformation("Work added {@id}: {@work}", work.Id, newWork);
         }
 
-        public async Task Delete(string id)
+        public async Task Delete(int id)
         {
             Work? work = await _context.Works.FindAsync(id);
             _context.Works.Remove(work);
@@ -43,7 +43,7 @@ namespace AutoService.Api.Services.Implementation
             return result;
         }
 
-        public async Task<List<Work>> GetWorksForCustomer(string customerID)
+        public async Task<List<Work>> GetWorksForCustomer(int customerID)
         {
 
             var results = await _context.Works
@@ -54,7 +54,7 @@ namespace AutoService.Api.Services.Implementation
         }
 
 
-        public async Task<Work> Get(string id, bool needLog = true)
+        public async Task<Work> Get(int id, bool needLog = true)
         {
             var work = await _context.Works.FirstOrDefaultAsync(w => w.Id == id);
             if (needLog) 

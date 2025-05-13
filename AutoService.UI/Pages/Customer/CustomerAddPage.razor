@@ -19,7 +19,7 @@
 	
 	private async Task AddCustomerAsync()
 	{
-        Customer.Id = Guid.NewGuid().ToString();
+        
 		await CustomerService.AddCustomerAsync(Customer);
 		NavigationManager.NavigateTo("/customers/list");
 		

@@ -6,13 +6,13 @@ namespace AutoService.Api.Services
     {
         Task Add(Work work);
 
-        Task Delete(string id);
+        Task Delete(int id);
 
         Task<List<Work>> GetAll();
 
-        Task<List<Work>> GetWorksForCustomer(string customerID);
+        Task<List<Work>> GetWorksForCustomer(int customerID);
 
-        Task<Work> Get(string id, bool needLog);
+        Task<Work> Get(int id, bool needLog);
 
         Task Update( Work work);
 

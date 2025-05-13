@@ -20,7 +20,7 @@ namespace AutoService.UI.Services.Implementation
         
         }
 
-        public async Task DeleteCustomerAsync(string id)
+        public async Task DeleteCustomerAsync(int id)
         {
             await _httpClient.DeleteAsync($"/customers/{id}");
         }
@@ -30,7 +30,7 @@ namespace AutoService.UI.Services.Implementation
             return await _httpClient.GetFromJsonAsync<IList<Customer>>("/customers/?");
         }
 
-        public async Task<Customer> GetCustomerAsync(string id)
+        public async Task<Customer> GetCustomerAsync(int id)
         {
             return await _httpClient.GetFromJsonAsync<Customer>($"/customers/{id}/?");
         }

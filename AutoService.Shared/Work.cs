@@ -11,12 +11,12 @@ namespace AutoService.Shared
     public class Work
     {
         [Key]
-        [Required]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public string Id { get; set; }
+        public int Id { get; set; }
 
         [Required]
-        public string CustomerId { get; set; }
+        public int CustomerId { get; set; }
 
         [Required]
         [RegularExpression(@"^[A-Z]{3}-\d{3}$", ErrorMessage = "RegPlate must be in the format XXX-YYY (X: uppercase letters, Y: numbers).")]

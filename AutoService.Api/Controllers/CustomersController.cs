@@ -33,7 +33,7 @@ namespace AutoService.Api.Controllers
 
         // GET: Customers/Details/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Work>> Get(string id)
+        public async Task<ActionResult<Work>> Get(int id)
         {
             if (id == null)
             {
@@ -66,7 +66,7 @@ namespace AutoService.Api.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(string id, [Bind("Id,Name,Adress,Email")] Customer customer)
+        public async Task<IActionResult> Update(int id, [Bind("Id,Name,Adress,Email")] Customer customer)
         {
             if (id != customer.Id|| customer == null)
             {
@@ -88,7 +88,7 @@ namespace AutoService.Api.Controllers
 
         [HttpDelete("{id}")]
         
-        public async Task<IActionResult> Delete(string id)
+        public async Task<IActionResult> Delete(int id)
         {
             var customer = await _customerService.Get(id, false);
             if (customer == null)
@@ -104,7 +104,7 @@ namespace AutoService.Api.Controllers
         }
 
         [HttpGet("{id}/works")]
-        public async Task<ActionResult<List<Work>>> GetWorks(string id)
+        public async Task<ActionResult<List<Work>>> GetWorks(int id)
         {
             var customer = await _customerService.Get(id, false);
             if (id == null || customer == null)
