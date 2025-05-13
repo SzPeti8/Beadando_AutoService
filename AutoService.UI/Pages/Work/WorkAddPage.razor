@@ -1,0 +1,35 @@
+﻿@page "/work/add"
+
+@using AutoService.Shared
+@using AutoService.UI.Components
+@using AutoService.UI.Services
+@inject IWorkService WorkService;
+@inject NavigationManager NavigationManager
+
+<h3>Add Work</h3>
+
+<div class="container-fluid p-0">
+	<div class="card p-3">
+		<WorkForm Work="Work" OnValidSubmit="AddWorkAsync" ButtonText="Add Work" SelectedCustomer="selectedCustomer" />
+	</div>
+</div>
+
+@code {
+	private Work Work { get; set; } = new();
+
+	private Customer? selectedCustomer;
+
+	protected override async Task OnInitializedAsync()
+	{
+		
+	}
+
+	private async Task AddWorkAsync()
+	{
+		if (selectedCustomer != null)
+			Work.CustomerId = selectedCustomer.Id;
+
+		await WorkService.AddWorkAsync(Work);
+		NavigationManager.NavigateTo("/work/list");
+	}
+}

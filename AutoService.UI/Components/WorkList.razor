@@ -1,4 +1,5 @@
 ﻿@using AutoService.Shared
+@using AutoService.UI.Pages.Work
 @using AutoService.UI.Services
 @inject IWorkService WorkService
 @inject IWorkHourEstimationService WorkHourEstimationService
@@ -50,8 +51,8 @@
                     <td>@work.FaultSeverity</td>
                     <td>@work.WorkStatus</td>
                     <td>@(string.Format("{0:N2}h", WorkHourEstimationService.GetWorkHourEstimation(work)))</td>
-                    <td>@(WorkSelectedButtonTemplate(work))</td>
-                    @* <td><a href="/work/@work.Work.Id" class="btn btn-primary">Details</a></td> *@
+                    @*<td>@(WorkSelectedButtonTemplate(work))</td>*@
+                    <td><a href="/work/selected/@work.Id" class="btn btn-primary">Details</a></td> 
                 </tr>
                 i++;
             }

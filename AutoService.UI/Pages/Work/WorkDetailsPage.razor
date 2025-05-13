@@ -1,0 +1,62 @@
+﻿@page "/work/selected/{id}"
+
+@using AutoService.Shared
+@using AutoService.UI.Components
+@using AutoService.UI.Services
+@inject IWorkService WorkService
+@inject NavigationManager NavigationManager
+@inject ICustomerService CustomerService
+
+<h3>Work Details</h3>
+
+@if (Work is null)
+{
+	<p>Loading...</p>
+}
+else
+{
+	<div class="container-fluid p-0">
+		<div class="row">
+			<div class="col card p-3 mr-2">
+				<div class="card-header bg-transparent">
+					<h4>Work</h4>
+				</div>
+				<div class="card-body">
+					<WorkForm Work="Work" SelectedCustomer="selectedCustomer" OnValidSubmit="UpdateAsync" ButtonText="Update" />
+					<button class="mt-1 w-100 btn btn-danger" @onclick="DeleteAsync">Delete</button>
+				</div>
+			</div>
+		</div>
+	</div>
+}
+
+
+@code {
+	[Parameter]
+	public string Id { get; set; }
+
+	private Work Work { get; set; }
+
+	private Customer selectedCustomer { get; set; }
+
+	protected override async Task OnInitializedAsync()
+	{
+		Work = await WorkService.GetWorkAsync(Id);
+        selectedCustomer = await CustomerService.GetCustomerAsync(Work.CustomerId);
+	}
+
+	private async Task DeleteAsync()
+	{
+		await WorkService.DeleteWorkAsync(Id);
+		NavigationManager.NavigateTo("/work/list");
+	}
+
+
+	private async Task UpdateAsync()
+	{
+		await WorkService.UpdateWorkAsync(Work);
+		NavigationManager.NavigateTo("/work/list");
+	}
+
+	
+}

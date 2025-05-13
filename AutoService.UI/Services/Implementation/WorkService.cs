@@ -26,12 +26,12 @@ namespace AutoService.UI.Services.Implementation
 
         public async Task<IList<Work>> GetAllWorksAsync()
         {
-            return await _httpClient.GetFromJsonAsync<IList<Work>>("/works?");
+            return await _httpClient.GetFromJsonAsync<IList<Work>>("/works");
         }
 
         public async Task<Work> GetWorkAsync(string id)
         {
-            return await _httpClient.GetFromJsonAsync<Work>($"/api/Works/{id}?");
+            return await _httpClient.GetFromJsonAsync<Work>($"/Works/{id}");
         }
 
         public async Task UpdateWorkAsync(Work work)

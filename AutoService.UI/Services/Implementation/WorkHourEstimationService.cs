@@ -16,7 +16,7 @@ namespace AutoService.UI.Services.Implementation
                 _ => 1
             };
 
-            int age = DateTime.Now.Year - work.DateOfMake.Value.Year;
+            int age = DateTime.Now.Year - work.DateOfMake.Year;
             double oldness = age switch
             {
                 < 5 => 0.5,

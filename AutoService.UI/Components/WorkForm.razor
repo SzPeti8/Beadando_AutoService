@@ -1,0 +1,185 @@
+﻿@using AutoService.Shared
+@using AutoService.UI.Services
+@inject ICustomerService CustomerService
+@inject NavigationManager Navigation
+
+<div class="modal fade" id="customerSelectModal" tabindex="-1">
+	<div class="modal-dialog justify-content-center modal-fullscreen modal-dialog-centered">
+		<div class="modal-content w-75 h-75">
+			<div class="modal-header">
+				<h5 class="modal-title" id="customerSelectModalLabel">Select the customer</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				@if (Customers == null)
+				{
+					<p>Loading...</p>
+				}
+				else
+				{
+					<CustomerList Customers="Customers" EnableSearch="true">
+						<CustomerSelectedButtonTemplate>
+							<button @onclick="@(() => CustomerSelected(context))" data-bs-dismiss="modal" class="btn btn-primary">Select</button>
+						</CustomerSelectedButtonTemplate>
+					</CustomerList>
+				}
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<EditForm EditContext="editContext" OnValidSubmit="OnValidSubmit">
+	<DataAnnotationsValidator />
+
+	<div class="form-group row mb-3">
+		<label class="col-md-2 col-form-label">Ügyfél: <span class="text-danger" /></label>
+		<div class="col-md-10">
+			<div class="input-group">
+				<div class="input-group-prepend">
+					<button class="btn btn-outline-secondary" type="button" data-bs-toggle="modal" data-bs-target="#customerSelectModal">Select</button>
+				</div>
+				<input readonly value="@(SelectedCustomer != null ? $"{SelectedCustomer.Name} ({SelectedCustomer.Email})" : "")" type="text" class="form-control" placeholder="None" />
+				<div class="input-group-append">
+					<button @onclick="@(() => NavigateToCustomer(SelectedCustomer.Id))" disabled="@(SelectedCustomer == null)" class="btn btn-outline-secondary">Details</button>
+				</div>
+			</div>
+			<ValidationMessage For="@(() => Work.CustomerId)" />
+		</div>
+	</div>
+	<div class="form-group row mb-3">
+		<label class="col-md-2 col-form-label">Rendszám: <span class="text-danger" /></label>
+		<div class="col-md-10">
+			<InputText class="form-control" @bind-Value="Work.RegPlate" Placeholder="License Plate" />
+			<ValidationMessage For="@(() => Work.RegPlate)" />
+		</div>
+	</div>
+	<div class="form-group row mb-3">
+		<label class="col-md-2 col-form-label">Gyártási év: <span class="text-danger" /></label>
+		<div class="col-md-10">
+			<InputDate TValue="DateOnly"
+					   @bind-Value="Work.DateOfMake"
+					   class="form-control"
+					   min="1900-01-01" />
+			<ValidationMessage For="@(() => Work.DateOfMake)" />
+		</div>
+	</div>
+
+	<div class="mb-3">
+		<label class="form-label">Kategória</label>
+		<InputSelect @bind-Value="Work.WorkType" class="form-select">
+			<option value="@WorkTypeEnum.Karosszeria">Karosszeria</option>
+			<option value="@WorkTypeEnum.Motor">Motor</option>
+			<option value="@WorkTypeEnum.Futomu">Futomu</option>
+			<option value="@WorkTypeEnum.Fekberendezes">Fekberendezes</option>
+		</InputSelect>
+		<ValidationMessage For="() => Work.WorkType" />
+	</div>
+	<div class="mb-3">
+		<label class="form-label">Hiba leírás</label>
+		<InputTextArea Placeholder="Description" rows="3"
+					   @bind-Value="@Work.FaultDescription"
+					   class="form-control" />
+		<ValidationMessage For="() => Work.FaultDescription" />
+	</div>
+	<div class="mb-3">
+		<label class="form-label">Hiba súlyossága</label>
+		<InputNumber TValue="int"
+					 @bind-Value="@Work.FaultSeverity"
+					 class="form-control" />
+		<ValidationMessage For="() => Work.FaultSeverity" />
+	</div>
+	<div class="mb-3">
+		<label class="form-label">Státusz</label>
+		<InputSelect @bind-Value="Work.WorkStatus" class="form-select">
+			<option disabled="@(workStatusInitial > WorkStatusEnum.FelvettMunka)" value="@WorkStatusEnum.FelvettMunka">Not Started</option>
+			<option disabled="@(workStatusInitial > WorkStatusEnum.ElvegzesAlatt)" value="@WorkStatusEnum.ElvegzesAlatt">In Progress</option>
+			<option disabled="@(workStatusInitial > WorkStatusEnum.Befejezett)" value="@WorkStatusEnum.Befejezett">Completed</option>
+		</InputSelect>
+		<ValidationMessage For="() => Work.WorkStatus" />
+	</div>
+	<div class="mb-3">
+		<button class="w-100 btn btn-primary" type="submit">@ButtonText</button>
+	</div>
+</EditForm>
+
+
+
+@code {
+	[Parameter]
+	public Work Work { get; set; }
+
+	[Parameter]
+	public Func<Task> OnValidSubmit { get; set; }
+
+	[Parameter]
+	public string ButtonText { get; set; }
+
+	[Parameter]
+	public Customer? SelectedCustomer { get; set; }
+
+	private EditContext editContext;
+	private ValidationMessageStore validationMessages;
+
+	private IList<Customer> Customers { get; set; }
+
+	private WorkStatusEnum workStatusInitial;
+ 
+
+	protected override async Task OnInitializedAsync()
+	{
+		editContext = new(Work);
+		validationMessages = new(editContext);
+
+		editContext.OnFieldChanged += (s, e) =>
+		{
+			FieldIdentifier customerIdField = editContext.Field(nameof(Work.CustomerId));
+			if (e.FieldIdentifier.Equals(customerIdField))
+				CustomValidateCustomerIdField();
+
+			FieldIdentifier statusField = editContext.Field(nameof(Work.WorkStatus));
+			if (e.FieldIdentifier.Equals(statusField))
+				CustomValidateStatusField();
+		};
+
+		editContext.OnValidationRequested += (s, e) =>
+		{
+			CustomValidateCustomerIdField();
+			CustomValidateStatusField();
+		};
+
+		workStatusInitial = Work.WorkStatus;
+		Customers = await CustomerService.GetAllCustomersAsync();
+	}
+
+	private async Task CustomerSelected(Customer customer)
+	{
+		SelectedCustomer = customer;
+		Work.CustomerId = customer.Id;
+		editContext.NotifyFieldChanged(editContext.Field(nameof(Work.CustomerId)));
+		StateHasChanged();
+	}
+
+	private async Task NavigateToCustomer(string id)
+	{
+		Navigation.NavigateTo($"/customer/{id}");
+	}
+
+	private void CustomValidateCustomerIdField()
+	{
+		FieldIdentifier customerIdField = editContext.Field(nameof(Work.CustomerId));
+		validationMessages.Clear(customerIdField);
+		if (Work.CustomerId == string.Empty)
+			validationMessages.Add(customerIdField, "Customer is required.");
+	}
+
+	private void CustomValidateStatusField()
+	{
+		FieldIdentifier statusField = editContext.Field(nameof(Work.WorkStatus));
+		validationMessages.Clear(statusField);
+		if (Work.WorkStatus < workStatusInitial)
+			validationMessages.Add(statusField, $"Status cannot be lower than origial.");
+	}
+}

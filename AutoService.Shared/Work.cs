@@ -24,7 +24,7 @@ namespace AutoService.Shared
 
         [Required]
         [Range(typeof(DateOnly), "1900-01-01", "9999-12-31", ErrorMessage = "DateOfMake cannot be older than January 1, 1900.")]
-        public DateOnly? DateOfMake { get; set; }
+        public DateOnly DateOfMake { get; set; }
 
         [Required]
         [RegularExpression(@"^(Karosszeria|Motor|Futomu|Fekberendezes)$", ErrorMessage = "WorkType must be one of the following: Karosszeria, Motor, Futomu, Fekberendezes.")]
