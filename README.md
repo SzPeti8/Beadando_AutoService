@@ -1,71 +1,135 @@
-# CarService Manager
+## Car Service Management
 
-A simple car‑service management application built with **Blazor WebAssembly** (standalone) for the UI and **ASP.NET Core Web API** for the backend, using **SQLite** as the database.  
-Allows you to manage customers and works (service records): list, view details, add, update, and delete.
-
----
-
-## Table of Contents
-
-- [Features](#features)  
-- [Tech Stack](#tech-stack)  
-- [Getting Started](#getting-started)  
-  - [Prerequisites](#prerequisites)  
-  - [Installation](#installation)  
-  - [Configuration](#configuration)  
-  - [Database Initialization](#database-initialization)  
-- [Usage](#usage)  
-  - [Web UI](#web-ui)  
-  - [API Endpoints](#api-endpoints)  
-- [Project Structure](#project-structure)  
-- [Contributing](#contributing)  
-- [License](#license)  
+A web application for managing a car service center, built with Blazor WebAssembly (Standalone) for the front-end and ASP.NET Core Web API for the back-end, using SQLite as the database. The application allows users to list, add, view details, update and delete customers and their associated works (services).
 
 ---
 
 ## Features
 
-- **Customer Management**  
-  - List all customers  
-  - View customer details  
-  - Add new customer  
-  - Update existing customer
-  - List works filtered by customer 
+* **Customer Management**
 
-- **Work (Service Record) Management**  
-  - List all works  
-  - View work details  
-  - Add new work  
-  - Update existing work   
+  * List all customers
+  * Add a new customer
+  * View and update customer details
+  * In customer details window you can check the works associated with the customer
+
+* **Work (Service) Management**
+
+  * List all works
+  * Add a new work for a customer
+  * View and update work details
 
 ---
 
-## Tech Stack
+## Technologies
 
-- **Frontend**:  
-  - Blazor WebAssembly (Standalone)  
-  - Razor Components  
+* **Front-End**: Blazor WebAssembly (Standalone)
+* **Back-End**: ASP.NET Core Web API
+* **Database**: SQLite
+* **ORM**: Entity Framework Core
 
-- **Backend**:  
-  - ASP.NET Core Web API  
-  - Entity Framework Core with SQLite  
+---
 
-- **Database**:  
-  - SQLite (`.db` file in project root or specified Data folder)  
+## Prerequisites
+
+* [.NET SDK 9 or later](https://dotnet.microsoft.com/download)
+* SQLite (optional, for local database inspection)
+* A code editor (e.g., Visual Studio, VS Code)
 
 ---
 
 ## Getting Started
 
-### Prerequisites
+1. **Clone the Repository**
 
-- [.NET 9 SDK (or later)](https://dotnet.microsoft.com/download)  
-- Node.js & npm (if you plan to install additional client-side packages)  
-- Git  
-
-### Installation
-
-1. **Clone the repo**  
    ```bash
    git clone https://github.com/SzPeti8/Beadando_AutoService
    cd Beadando_AutoService
+   ```
+
+2. **Back-End Setup**
+
+   ```bash
+   cd AutoService.Api
+   dotnet restore
+   dotnet ef database update    # Applies migrations and creates SQLite database
+   dotnet run
+   ```
+
+   The API will start on `http://localhost:5273`.
+
+3. **Front-End Setup**
+
+   ```bash
+   cd AutoService.UI
+   dotnet restore
+   dotnet run
+   ```
+
+   The Blazor WebAssembly app will be available at `https://localhost:7048/`.
+
+---
+
+## Project Structure
+
+```
+/AutoService.Api.Tests # API Tests
+
+/AutoService.Api       # ASP.NET Core Web API project
+  |- Program.cs
+  |- Controllers
+  |- Data
+  |- Models
+  |- Migrations
+  |- Services
+
+/AutoService.Shared              # Common DTOs and models
+  |- Customer.cs
+  |- Work.cs
+
+/AutoService.UI.Tests # UI Tests
+
+/AutoService.UI    # Blazor WebAssembly project
+  |- Program.cs
+  |- wwwroot
+  |- Pages
+  |- Services
+  |- Layout
+  |- Components
+
+README.md
+```
+
+---
+
+## API Endpoints
+
+| Method | Route                       | Description                       |
+| ------ | --------------------------- | --------------------------------- |
+| GET    | `/api/customers`            | Get all customers                 |
+| GET    | `/api/customers/{id}`       | Get customer by ID                |
+| POST   | `/api/customers/add/`       | Create a new customer             |
+| PUT    | `/api/customers/{id}`       | Update existing customer          |
+| GET    | `/api/works`                | Get all works                     |
+| GET    | `/api/works/{id}`           | Get work by ID                    |
+| POST   | `/api/works/add/`           | Create a new work                 |
+| PUT    | `/api/works/{id}`           | Update existing work              |
+| GET    | `/api/customers/{id}/works` | Get works for a specific customer |
+
+---
+
+## Usage
+
+1. Navigate to the Blazor client app in your browser.
+2. Use the navigation menu to access **Customers** or **Works**.
+3. In **Customers**, you can view the list, add a new customer, or click a customer to view and edit details.
+4. In **Works**, you can view all services, add a new work entry (selecting a customer), or click a work item to view and edit details.
+5. To see works for a specific customer, go to the customer details page.
+
+---
+
+## Contributing
+
+Contributions are welcome! Please open issues or submit pull requests for enhancements, bug fixes, or additional features.
+
+
